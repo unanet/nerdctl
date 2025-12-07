@@ -20,10 +20,10 @@ RUN [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tl
     Remove-Item 'C:\nerdctl.tar.gz' -Force
 
 # Configure nerdctl for EKS containerd
-COPY nerdctl.toml C:\\ProgramData\\nerdctl\\nerdctl.toml
+COPY config/nerdctl.toml C:\\ProgramData\\nerdctl\\nerdctl.toml
 
 # Copy docker compatibility wrapper
-COPY docker.cmd C:\\nerdctl\\docker.cmd
+COPY config/docker.cmd C:\\nerdctl\\docker.cmd
 
 # Add nerdctl to PATH
 USER ContainerAdministrator
