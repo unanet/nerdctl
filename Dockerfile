@@ -9,6 +9,8 @@ SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPref
 
 ARG NERDCTL_VERSION=2.2.0
 
+USER ContainerAdministrator
+
 # Download and install nerdctl
 RUN [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; \
     New-Item -ItemType Directory -Path 'C:\nerdctl' -Force | Out-Null; \
@@ -29,7 +31,6 @@ COPY config/docker.cmd C:\\nerdctl\\docker.cmd
 COPY config/version C:\\version
 
 # Add nerdctl to PATH
-USER ContainerAdministrator
 RUN setx /M PATH \"C:\nerdctl;$env:PATH\"
 
 ENTRYPOINT ["powershell", "-NoLogo", "-NoProfile"]
