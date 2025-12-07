@@ -21,12 +21,8 @@ RUN [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tl
 
 # Configure nerdctl for EKS containerd
 RUN New-Item -ItemType Directory -Path 'C:\ProgramData\nerdctl' -Force | Out-Null; \
-    @'\
-address = "npipe:////./pipe/containerd-containerd"\
-namespace = "k8s.io"\
-snapshotter = "windows"\
-cgroup_manager = "cgroupfs"\
-'@ | Out-File -FilePath 'C:\ProgramData\nerdctl\nerdctl.toml' -Encoding UTF8
+    $config = \"address = `\"npipe:////./pipe/containerd-containerd`\"`nnamespace = `\"k8s.io`\"`nsnapshotter = `\"windows`\"`ncgroup_manager = `\"cgroupfs`\"\"; \
+    Set-Content -Path 'C:\ProgramData\nerdctl\nerdctl.toml' -Value $config -Encoding UTF8
 
 # Create docker compatibility wrapper
 RUN '@echo off\r\nnerdctl.exe %*' | Out-File -FilePath 'C:\nerdctl\docker.cmd' -Encoding ASCII -NoNewline
