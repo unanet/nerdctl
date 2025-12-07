@@ -25,7 +25,7 @@ RUN New-Item -ItemType Directory -Path 'C:\ProgramData\nerdctl' -Force | Out-Nul
     Set-Content -Path 'C:\ProgramData\nerdctl\nerdctl.toml' -Value $config -Encoding UTF8
 
 # Create docker compatibility wrapper
-RUN \"@echo off`r`nnerdctl.exe %*\" | Out-File -FilePath 'C:\nerdctl\docker.cmd' -Encoding ASCII -NoNewline
+RUN Set-Content -Path 'C:\nerdctl\docker.cmd' -Value @('@echo off', 'nerdctl.exe %*') -Encoding ASCII
 
 # Add nerdctl to PATH
 USER ContainerAdministrator
