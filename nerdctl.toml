@@ -1,0 +1,4 @@
+address = "npipe:////./pipe/containerd-containerd"
+namespace = "k8s.io"
+snapshotter = "windows"
+cgroup_manager = "cgroupfs"

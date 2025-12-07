@@ -20,9 +20,7 @@ RUN [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tl
     Remove-Item 'C:\nerdctl.tar.gz' -Force
 
 # Configure nerdctl for EKS containerd
-RUN New-Item -ItemType Directory -Path 'C:\ProgramData\nerdctl' -Force | Out-Null; \
-    $config = \"address = `\"npipe:////./pipe/containerd-containerd`\"`nnamespace = `\"k8s.io`\"`nsnapshotter = `\"windows`\"`ncgroup_manager = `\"cgroupfs`\"\"; \
-    Set-Content -Path 'C:\ProgramData\nerdctl\nerdctl.toml' -Value $config -Encoding UTF8
+COPY nerdctl.toml C:\\ProgramData\\nerdctl\\nerdctl.toml
 
 # Copy docker compatibility wrapper
 COPY docker.cmd C:\\nerdctl\\docker.cmd
