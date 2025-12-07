@@ -30,6 +30,5 @@ RUN '@echo off\r\nnerdctl.exe %*' | Out-File -FilePath 'C:\nerdctl\docker.cmd' -
 # Add nerdctl to PATH
 USER ContainerAdministrator
 RUN setx /M PATH \"C:\nerdctl;$env:PATH\"
-USER ContainerUser
 
 ENTRYPOINT ["powershell", "-NoLogo", "-NoProfile"]
