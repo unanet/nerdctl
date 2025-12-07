@@ -24,8 +24,8 @@ RUN New-Item -ItemType Directory -Path 'C:\ProgramData\nerdctl' -Force | Out-Nul
     $config = \"address = `\"npipe:////./pipe/containerd-containerd`\"`nnamespace = `\"k8s.io`\"`nsnapshotter = `\"windows`\"`ncgroup_manager = `\"cgroupfs`\"\"; \
     Set-Content -Path 'C:\ProgramData\nerdctl\nerdctl.toml' -Value $config -Encoding UTF8
 
-# Create docker compatibility wrapper
-RUN Set-Content -Path 'C:\nerdctl\docker.cmd' -Value @('@echo off', 'nerdctl.exe %*') -Encoding ASCII
+# Copy docker compatibility wrapper
+COPY docker.cmd C:\\nerdctl\\docker.cmd
 
 # Add nerdctl to PATH
 USER ContainerAdministrator
