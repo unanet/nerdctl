@@ -25,6 +25,9 @@ COPY config/nerdctl.toml C:\\ProgramData\\nerdctl\\nerdctl.toml
 # Copy docker compatibility wrapper
 COPY config/docker.cmd C:\\nerdctl\\docker.cmd
 
+# Copy version file for image validation
+COPY config/version C:\\version
+
 # Add nerdctl to PATH
 USER ContainerAdministrator
 RUN setx /M PATH \"C:\nerdctl;$env:PATH\"
