@@ -1,0 +1,39 @@
+# Windows nerdctl container image
+# Supports both Windows Server 2019 (ltsc2019) and 2022 (ltsc2022)
+# Build with: docker build --build-arg WINDOWS_VERSION=ltsc2022 -t unanet/nerdctl:latest-ltsc2022 .
+
+ARG WINDOWS_VERSION=ltsc2022
+FROM mcr.microsoft.com/windows/servercore:${WINDOWS_VERSION}
+
+SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
+
+ARG NERDCTL_VERSION=2.2.0
+
+# Download and install nerdctl
+RUN [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; \
+    New-Item -ItemType Directory -Path 'C:\nerdctl' -Force | Out-Null; \
+    Write-Host \"Downloading nerdctl $env:NERDCTL_VERSION...\"; \
+    Invoke-WebRequest -Uri \"https://github.com/containerd/nerdctl/releases/download/v$env:NERDCTL_VERSION/nerdctl-$env:NERDCTL_VERSION-windows-amd64.tar.gz\" \
+        -OutFile 'C:\nerdctl.tar.gz' -UseBasicParsing; \
+    Write-Host 'Extracting nerdctl...'; \
+    tar -xzf 'C:\nerdctl.tar.gz' -C 'C:\nerdctl'; \
+    Remove-Item 'C:\nerdctl.tar.gz' -Force
+
+# Configure nerdctl for EKS containerd
+RUN New-Item -ItemType Directory -Path 'C:\ProgramData\nerdctl' -Force | Out-Null; \
+    @'\
+address = "npipe:////./pipe/containerd-containerd"\
+namespace = "k8s.io"\
+snapshotter = "windows"\
+cgroup_manager = "cgroupfs"\
+'@ | Out-File -FilePath 'C:\ProgramData\nerdctl\nerdctl.toml' -Encoding UTF8
+
+# Create docker compatibility wrapper
+RUN '@echo off\r\nnerdctl.exe %*' | Out-File -FilePath 'C:\nerdctl\docker.cmd' -Encoding ASCII -NoNewline
+
+# Add nerdctl to PATH
+USER ContainerAdministrator
+RUN setx /M PATH \"C:\nerdctl;$env:PATH\"
+USER ContainerUser
+
+ENTRYPOINT ["powershell", "-NoLogo", "-NoProfile"]
